@@ -150,3 +150,14 @@ answerButton.onclick = async () => {
     });
   });
 };
+
+hangupButton.onclick = async () => {
+  console.log("hangupButton")
+  console.log("connectionState", pc.connectionState)
+  console.log("iceConnectionState", pc.iceConnectionState)
+  console.log("iceGatheringState", pc.iceGatheringState)
+  console.log("iceGatheringState", pc.iceGatheringState)
+  console.log("signalingState", pc.signalingState)
+  console.log("remoteDescription", pc.remoteDescription)
+  console.log("localDescription", pc.localDescription)
+}
