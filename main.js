@@ -81,7 +81,26 @@ callButton.onclick = async () => {
 
   // Get candidates for caller, save to db
   pc.onicecandidate = (event) => {
-    event.candidate && offerCandidates.add(event.candidate.toJSON());
+    // event.candidate && offerCandidates.add(event.candidate.toJSON());
+    if (event.candidate) {
+      let event_candidate = {
+        candidate: event.candidate.candidate,
+        component: event.candidate.component,
+        foundation: event.candidate.foundation,
+        ip: event.candidate.address,
+        port: event.candidate.port,
+        priority: event.candidate.priority,
+        protocol: event.candidate.protocol,
+        type: event.candidate.type,
+        relatedAddress: event.candidate.relatedAddress,
+        relatedPort: event.candidate.relatedPort,
+        sdpMid: event.candidate.sdpMid,
+        sdpMLineIndex: event.candidate.sdpMLineIndex,
+        tcpType: event.candidate.tcpType,
+      };
+      console.log("event_candidate", event_candidate);
+      offerCandidates.add(event_candidate);
+    }
   };
 
   // Create offer
