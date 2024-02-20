@@ -48,12 +48,22 @@ webcamButton.onclick = async () => {
     video: true,
     audio: true,
   });
-  remoteStream = new MediaStream();
 
   // Push tracks from local stream to peer connection
   localStream.getTracks().forEach((track) => {
     pc.addTrack(track, localStream);
-  });
+  }); 
+
+  webcamVideo.srcObject = localStream;
+ 
+  callButton.disabled = false;
+  answerButton.disabled = false;
+  webcamButton.disabled = true;
+};
+
+// 2. Create an offer
+callButton.onclick = async () => {
+  remoteStream = new MediaStream();
 
   // Pull tracks from remote stream, add to video stream
   pc.ontrack = (event) => {
@@ -62,16 +72,9 @@ webcamButton.onclick = async () => {
     });
   };
 
-  webcamVideo.srcObject = localStream;
   remoteVideo.srcObject = remoteStream;
 
-  callButton.disabled = false;
-  answerButton.disabled = false;
-  webcamButton.disabled = true;
-};
 
-// 2. Create an offer
-callButton.onclick = async () => {
   // Reference Firestore collections for signaling
   const callDoc = firestore.collection("calls").doc();
   const offerCandidates = callDoc.collection("offerCandidates");
@@ -81,6 +84,7 @@ callButton.onclick = async () => {
 
   // Get candidates for caller, save to db
   pc.onicecandidate = (event) => {
+    console.log("pc.onicecandidate = (event)", event)
     // event.candidate && offerCandidates.add(event.candidate.toJSON());
     if (event.candidate) {
       let event_candidate = {
@@ -104,7 +108,7 @@ callButton.onclick = async () => {
   };
 
   // Create offer
-  const offerDescription = await pc.createOffer();
+  const offerDescription = await pc.createOffer({offerToReceiveVideo: true});
   await pc.setLocalDescription(offerDescription);
 
   const offer = {
