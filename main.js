@@ -60,8 +60,8 @@ let addAnswer = async () => {
     }
 }
 
-init()
 
 document.getElementById('create-offer').addEventListener('click', createOffer)
 document.getElementById('create-answer').addEventListener('click', createAnswer)
 document.getElementById('add-answer').addEventListener('click', addAnswer)
+document.getElementById('init-offer').addEventListener('click', init)
