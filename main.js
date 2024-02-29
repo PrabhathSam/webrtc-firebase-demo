@@ -44,6 +44,16 @@ const hangupButton = document.getElementById("hangupButton");
 // 1. Setup media sources
 
 webcamButton.onclick = async () => {
+  var docRef = firestore.collection("calls").doc("1");
+
+  docRef.delete()
+    // .then(() => {
+    //   console.log("Document successfully deleted!");
+    // })
+    // .catch((error) => {
+    //   console.error("Error removing document: ", error);
+    // });
+
   localStream = await navigator.mediaDevices.getUserMedia({
     video: true,
     audio: false,
