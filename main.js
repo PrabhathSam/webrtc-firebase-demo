@@ -44,16 +44,6 @@ const hangupButton = document.getElementById("hangupButton");
 // 1. Setup media sources
 
 webcamButton.onclick = async () => {
-  var docRef = firestore.collection("calls").doc("1");
-
-  docRef.delete()
-    // .then(() => {
-    //   console.log("Document successfully deleted!");
-    // })
-    // .catch((error) => {
-    //   console.error("Error removing document: ", error);
-    // });
-
   localStream = await navigator.mediaDevices.getUserMedia({
     video: true,
     audio: false,
@@ -82,6 +72,9 @@ webcamButton.onclick = async () => {
 
 // 2. Create an offer
 callButton.onclick = async () => {
+  var docRef = firestore.collection("calls").doc("1");
+  await docRef.delete()
+  
   // Reference Firestore collections for signaling
   const callDoc = firestore.collection("calls").doc("1");
   const offerCandidates = callDoc.collection("offerCandidates");
