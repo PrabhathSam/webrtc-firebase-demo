@@ -73,7 +73,7 @@ webcamButton.onclick = async () => {
 // 2. Create an offer
 callButton.onclick = async () => {
   // Reference Firestore collections for signaling
-  const callDoc = firestore.collection("calls").doc();
+  const callDoc = firestore.collection("calls").doc("1");
   const offerCandidates = callDoc.collection("offerCandidates");
   const answerCandidates = callDoc.collection("answerCandidates");
 
@@ -139,7 +139,7 @@ callButton.onclick = async () => {
 // 3. Answer the call with the unique ID
 answerButton.onclick = async () => {
   const callId = callInput.value;
-  const callDoc = firestore.collection("calls").doc(callId);
+  const callDoc = firestore.collection("calls").doc("1");
   const answerCandidates = callDoc.collection("answerCandidates");
   const offerCandidates = callDoc.collection("offerCandidates");
 
