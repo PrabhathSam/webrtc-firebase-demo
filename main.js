@@ -41,7 +41,7 @@ let init = async () => {
 };
 
 let createOffer = async () => {
-  const callDoc = firestore.collection("calls2").doc();
+  const callDoc = firestore.collection("calls2").doc("test1");
 
   peerConnection.onicecandidate = async (event) => {
     //Event that fires off when a new offer ICE candidate is created
@@ -60,7 +60,7 @@ let createOffer = async () => {
 
 let createAnswer = async () => {
   const callId = document.getElementById("offer-sdp").value;
-  const callDoc = firestore.collection("calls2").doc(callId);
+  const callDoc = firestore.collection("calls2").doc("test1");
   const callData = (await callDoc.get()).data();
   const offerDescription = callData.offer;
 
@@ -88,7 +88,7 @@ let createAnswer = async () => {
 
 let addAnswer = async () => {
   const callId = document.getElementById("offer-sdp").value;
-  const callDoc = firestore.collection("calls2").doc(callId);
+  const callDoc = firestore.collection("calls2").doc("test1");
   const callData = (await callDoc.get()).data();
   const answerDescription = callData.answer;
 
