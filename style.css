@@ -1,23 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap');
-
-body {
-  font-family: 'Syne Mono', monospace;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin: 80px 10px;
+body{
+  width:800px;
+  margin: 0 auto;
 }
 
-video {
-  width: 40vw;
-  height: 30vw;
-  margin: 2rem;
-  background: #2c3e50;
-}
+#videos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1em;
+    width: 100%;
+    padding: 10px;
+  }
+  
+  video {
+    width: 100%;
+    border:2px solid greenyellow;
+    background-color: rgb(63, 62, 62);
 
-.videos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  }
+
+  textarea{
+    height: 50px;
+    width: 100%;
+  }
+  
+  .step{
+    background-color: beige;
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .step p{
+    margin: 0;
+  }
+
+
+@media screen and (max-width:800px) {
+    body{
+      width: 100%;
+    }
 }

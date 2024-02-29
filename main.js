@@ -1,152 +1,67 @@
-import './style.css';
+let peerConnection = new RTCPeerConnection()
+let localStream;
+let remoteStream;
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+let init = async () => {
+    localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false})
+    remoteStream = new MediaStream()
+    document.getElementById('user-1').srcObject = localStream
+    document.getElementById('user-2').srcObject = remoteStream
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAwXvqhfDvoZaZrbwmQGh6rVvl7zUJVxBE",
-  authDomain: "webrtc-7000f.firebaseapp.com",
-  projectId: "webrtc-7000f",
-  storageBucket: "webrtc-7000f.appspot.com",
-  messagingSenderId: "721148472292",
-  appId: "1:721148472292:web:76cf9fd25b801a930475f1",
-  measurementId: "G-TLE1NM2Y90"
-};
+    localStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localStream);
+    });
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+    peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+        remoteStream.addTrack(track);
+        });
+    };
 }
-const firestore = firebase.firestore();
 
-const servers = {
-  iceServers: [
-    {
-      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
-    },
-  ],
-  iceCandidatePoolSize: 10,
-};
+let createOffer = async () => {
 
-// Global State
-const pc = new RTCPeerConnection(servers);
-let localStream = null;
-let remoteStream = null;
 
-// HTML elements
-const webcamButton = document.getElementById('webcamButton');
-const webcamVideo = document.getElementById('webcamVideo');
-const callButton = document.getElementById('callButton');
-const callInput = document.getElementById('callInput');
-const answerButton = document.getElementById('answerButton');
-const remoteVideo = document.getElementById('remoteVideo');
-const hangupButton = document.getElementById('hangupButton');
+    peerConnection.onicecandidate = async (event) => {
+        //Event that fires off when a new offer ICE candidate is created
+        if(event.candidate){
+            document.getElementById('offer-sdp').value = JSON.stringify(peerConnection.localDescription)
+        }
+    };
 
-// 1. Setup media sources
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+}
 
-webcamButton.onclick = async () => {
-  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  remoteStream = new MediaStream();
+let createAnswer = async () => {
 
-  // Push tracks from local stream to peer connection
-  localStream.getTracks().forEach((track) => {
-    pc.addTrack(track, localStream);
-  });
+    let offer = JSON.parse(document.getElementById('offer-sdp').value)
 
-  // Pull tracks from remote stream, add to video stream
-  pc.ontrack = (event) => {
-    event.streams[0].getTracks().forEach((track) => {
-      remoteStream.addTrack(track);
-    });
-  };
+    peerConnection.onicecandidate = async (event) => {
+        //Event that fires off when a new answer ICE candidate is created
+        if(event.candidate){
+            console.log('Adding answer candidate...:', event.candidate)
+            document.getElementById('answer-sdp').value = JSON.stringify(peerConnection.localDescription)
+        }
+    };
 
-  webcamVideo.srcObject = localStream;
-  remoteVideo.srcObject = remoteStream;
+    await peerConnection.setRemoteDescription(offer);
 
-  callButton.disabled = false;
-  answerButton.disabled = false;
-  webcamButton.disabled = true;
-};
+    let answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer); 
+}
 
-// 2. Create an offer
-callButton.onclick = async () => {
-  // Reference Firestore collections for signaling
-  const callDoc = firestore.collection('calls').doc();
-  const offerCandidates = callDoc.collection('offerCandidates');
-  const answerCandidates = callDoc.collection('answerCandidates');
-
-  callInput.value = callDoc.id;
-
-  // Get candidates for caller, save to db
-  pc.onicecandidate = (event) => {
-    event.candidate && offerCandidates.add(event.candidate.toJSON());
-  };
-
-  // Create offer
-  const offerDescription = await pc.createOffer();
-  await pc.setLocalDescription(offerDescription);
-
-  const offer = {
-    sdp: offerDescription.sdp,
-    type: offerDescription.type,
-  };
-
-  await callDoc.set({ offer });
-
-  // Listen for remote answer
-  callDoc.onSnapshot((snapshot) => {
-    const data = snapshot.data();
-    if (!pc.currentRemoteDescription && data?.answer) {
-      const answerDescription = new RTCSessionDescription(data.answer);
-      pc.setRemoteDescription(answerDescription);
+let addAnswer = async () => {
+    console.log('Add answer triggerd')
+    let answer = JSON.parse(document.getElementById('answer-sdp').value)
+    console.log('answer:', answer)
+    if (!peerConnection.currentRemoteDescription){
+        peerConnection.setRemoteDescription(answer);
     }
-  });
+}
 
-  // When answered, add candidate to peer connection
-  answerCandidates.onSnapshot((snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      if (change.type === 'added') {
-        const candidate = new RTCIceCandidate(change.doc.data());
-        pc.addIceCandidate(candidate);
-      }
-    });
-  });
+init()
 
-  hangupButton.disabled = false;
-};
-
-// 3. Answer the call with the unique ID
-answerButton.onclick = async () => {
-  const callId = callInput.value;
-  const callDoc = firestore.collection('calls').doc(callId);
-  const answerCandidates = callDoc.collection('answerCandidates');
-  const offerCandidates = callDoc.collection('offerCandidates');
-
-  pc.onicecandidate = (event) => {
-    event.candidate && answerCandidates.add(event.candidate.toJSON());
-  };
-
-  const callData = (await callDoc.get()).data();
-
-  const offerDescription = callData.offer;
-  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-  const answerDescription = await pc.createAnswer();
-  await pc.setLocalDescription(answerDescription);
-
-  const answer = {
-    type: answerDescription.type,
-    sdp: answerDescription.sdp,
-  };
-
-  await callDoc.update({ answer });
-
-  offerCandidates.onSnapshot((snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      console.log(change);
-      if (change.type === 'added') {
-        let data = change.doc.data();
-        pc.addIceCandidate(new RTCIceCandidate(data));
-      }
-    });
-  });
-};
+document.getElementById('create-offer').addEventListener('click', createOffer)
+document.getElementById('create-answer').addEventListener('click', createAnswer)
+document.getElementById('add-answer').addEventListener('click', addAnswer)
