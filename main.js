@@ -41,17 +41,15 @@ let init = async () => {
 };
 
 let createOffer = async () => {
-  const callDoc = firestore.collection('calls2').doc();
+  const callDoc = firestore.collection("calls2").doc();
 
   peerConnection.onicecandidate = async (event) => {
     //Event that fires off when a new offer ICE candidate is created
     if (event.candidate) {
-      document.getElementById("offer-sdp").value = callDoc.id
+      document.getElementById("offer-sdp").value = callDoc.id;
 
-      const offer = JSON.stringify(
-        peerConnection.localDescription
-      );
-    
+      const offer = JSON.stringify(peerConnection.localDescription);
+
       await callDoc.set({ offer });
     }
   };
@@ -61,7 +59,12 @@ let createOffer = async () => {
 };
 
 let createAnswer = async () => {
-  let offer = JSON.parse(document.getElementById("offer-sdp").value);
+  const callId = document.getElementById("offer-sdp").value;
+  const callDoc = firestore.collection("calls2").doc(callId);
+  const callData = (await callDoc.get()).data();
+  const offerDescription = callData.offer;
+
+  let offer = JSON.parse(offerDescription);
 
   peerConnection.onicecandidate = async (event) => {
     //Event that fires off when a new answer ICE candidate is created
@@ -70,6 +73,10 @@ let createAnswer = async () => {
       document.getElementById("answer-sdp").value = JSON.stringify(
         peerConnection.localDescription
       );
+
+      const answer = JSON.stringify(peerConnection.localDescription);
+
+      await callDoc.update({ answer });
     }
   };
 
@@ -80,19 +87,23 @@ let createAnswer = async () => {
 };
 
 let addAnswer = async () => {
+  const callId = document.getElementById("offer-sdp").value;
+  const callDoc = firestore.collection("calls2").doc(callId);
+  const callData = (await callDoc.get()).data();
+  const answerDescription = callData.answer;
+
   console.log("Add answer triggerd");
-  let answer = JSON.parse(document.getElementById("answer-sdp").value);
+  let answer = JSON.parse(answerDescription);
   console.log("answer:", answer);
   if (!peerConnection.currentRemoteDescription) {
     peerConnection.setRemoteDescription(answer);
   }
 };
 
-init()
+init();
 
 document.getElementById("create-offer").addEventListener("click", createOffer);
 document
   .getElementById("create-answer")
   .addEventListener("click", createAnswer);
 document.getElementById("add-answer").addEventListener("click", addAnswer);
-document.getElementById("init-offer").addEventListener("click", init);
