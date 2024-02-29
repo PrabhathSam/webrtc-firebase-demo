@@ -41,12 +41,18 @@ let init = async () => {
 };
 
 let createOffer = async () => {
+  const callDoc = firestore.collection('calls2').doc();
+
   peerConnection.onicecandidate = async (event) => {
     //Event that fires off when a new offer ICE candidate is created
     if (event.candidate) {
-      document.getElementById("offer-sdp").value = JSON.stringify(
+      document.getElementById("offer-sdp").value = callDoc.id
+
+      const offer = JSON.stringify(
         peerConnection.localDescription
       );
+    
+      await callDoc.set({ offer });
     }
   };
 
@@ -81,6 +87,8 @@ let addAnswer = async () => {
     peerConnection.setRemoteDescription(answer);
   }
 };
+
+init()
 
 document.getElementById("create-offer").addEventListener("click", createOffer);
 document
