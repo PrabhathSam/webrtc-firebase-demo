@@ -1,3 +1,21 @@
+import firebase from "firebase/app";
+import "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAwXvqhfDvoZaZrbwmQGh6rVvl7zUJVxBE",
+  authDomain: "webrtc-7000f.firebaseapp.com",
+  projectId: "webrtc-7000f",
+  storageBucket: "webrtc-7000f.appspot.com",
+  messagingSenderId: "721148472292",
+  appId: "1:721148472292:web:76cf9fd25b801a930475f1",
+  measurementId: "G-TLE1NM2Y90",
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const firestore = firebase.firestore();
+
 let peerConnection = new RTCPeerConnection();
 let localStream;
 let remoteStream;
