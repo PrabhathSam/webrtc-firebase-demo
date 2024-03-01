@@ -21,7 +21,29 @@ const firestore = firebase.firestore();
 const servers = {
   iceServers: [
     {
-      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+      url: "stun:global.stun.twilio.com:3478",
+      urls: "stun:global.stun.twilio.com:3478",
+    },
+    {
+      url: "turn:global.turn.twilio.com:3478?transport=udp",
+      username:
+        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
+      urls: "turn:global.turn.twilio.com:3478?transport=udp",
+      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
+    },
+    {
+      url: "turn:global.turn.twilio.com:3478?transport=tcp",
+      username:
+        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
+      urls: "turn:global.turn.twilio.com:3478?transport=tcp",
+      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
+    },
+    {
+      url: "turn:global.turn.twilio.com:443?transport=tcp",
+      username:
+        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
+      urls: "turn:global.turn.twilio.com:443?transport=tcp",
+      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
     },
   ],
   iceCandidatePoolSize: 10,
@@ -73,8 +95,8 @@ webcamButton.onclick = async () => {
 // 2. Create an offer
 callButton.onclick = async () => {
   var docRef = firestore.collection("calls").doc("1");
-  await docRef.delete()
-  
+  await docRef.delete();
+
   // Reference Firestore collections for signaling
   const callDoc = firestore.collection("calls").doc("1");
   const offerCandidates = callDoc.collection("offerCandidates");
