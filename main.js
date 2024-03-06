@@ -19,29 +19,13 @@ const firestore = firebase.firestore();
 const servers = {
   iceServers: [
     {
-      url: "stun:global.stun.twilio.com:3478",
-      urls: "stun:global.stun.twilio.com:3478",
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
     },
     {
-      url: "turn:global.turn.twilio.com:3478?transport=udp",
-      username:
-        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
-      urls: "turn:global.turn.twilio.com:3478?transport=udp",
-      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
-    },
-    {
-      url: "turn:global.turn.twilio.com:3478?transport=tcp",
-      username:
-        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
-      urls: "turn:global.turn.twilio.com:3478?transport=tcp",
-      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
-    },
-    {
-      url: "turn:global.turn.twilio.com:443?transport=tcp",
-      username:
-        "01bb5300c1b2a38bd6ee84d9428f816b89e349db9d7434508a3f21d0ba2db579",
-      urls: "turn:global.turn.twilio.com:443?transport=tcp",
-      credential: "cbYNQUK/D5++36tYPf+2tFIrKHeYz/R9/uwUiDQz9SI=",
+      url: "turn:128.199.236.210:3478",
+      username: "test",
+      urls: "turn:128.199.236.210:3478",
+      credential: "test123",
     },
   ],
   iceCandidatePoolSize: 10,
@@ -53,8 +37,11 @@ let remoteStream;
 
 let init = async () => {
   localStream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: false,
+    video: {
+      width: { ideal: 160 }, // Specifies the ideal width in pixels
+      height: { ideal: 120 } // Specifies the ideal height in pixels
+    },
+    audio: true,
   });
   remoteStream = new MediaStream();
   document.getElementById("user-1").srcObject = localStream;
