@@ -24,9 +24,15 @@ const servers = {
       urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
     },
     {
-      url: "turn:128.199.236.210:3478",
-      username: "test",
-      urls: "turn:128.199.236.210:3478",
+      url: "turn:aifo.gscco.aidrivers.ai:3478",
+      username: "itadmin",
+      urls: "turn:aifo.gscco.aidrivers.ai:3478",
+      credential: "test123",
+    },
+    {
+      url: "turn:aifo.gscco.aidrivers.ai:5349",
+      username: "itadmin",
+      urls: "turn:aifo.gscco.aidrivers.ai:5349",
       credential: "test123",
     },
   ],
