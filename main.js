@@ -40,24 +40,24 @@ const servers = {
 };
 
 let peerConnection = new RTCPeerConnection(servers);
-let localStream;
+// let localStream;
 let remoteStream;
 
 let init = async () => {
-  localStream = await navigator.mediaDevices.getUserMedia({
-    video: {
-      width: { ideal: 160 }, // Specifies the ideal width in pixels
-      height: { ideal: 120 } // Specifies the ideal height in pixels
-    },
-    audio: true,
-  });
+  // localStream = await navigator.mediaDevices.getUserMedia({
+  //   video: {
+  //     width: { ideal: 160 }, // Specifies the ideal width in pixels
+  //     height: { ideal: 120 } // Specifies the ideal height in pixels
+  //   },
+  //   audio: true,
+  // });
   remoteStream = new MediaStream();
-  document.getElementById("user-1").srcObject = localStream;
+  // document.getElementById("user-1").srcObject = localStream;
   document.getElementById("user-2").srcObject = remoteStream;
 
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream);
-  });
+  // localStream.getTracks().forEach((track) => {
+  //   peerConnection.addTrack(track, localStream);
+  // });
 
   peerConnection.ontrack = (event) => {
     event.streams[0].getTracks().forEach((track) => {
@@ -67,6 +67,7 @@ let init = async () => {
 };
 
 let createOffer = async () => {
+  init();
   const callDoc = firestore.collection("calls2").doc("test1");
 
   peerConnection.onicecandidate = async (event) => {
@@ -126,7 +127,7 @@ let addAnswer = async () => {
   }
 };
 
-init();
+
 
 document.getElementById("create-offer").addEventListener("click", createOffer);
 document
