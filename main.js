@@ -80,7 +80,7 @@ let createOffer = async () => {
     }
   };
 
-  const offer = await peerConnection.createOffer();
+  const offer = await peerConnection.createOffer({offerToReceiveVideo: true, OfferToReceiveAudio: true});
   await peerConnection.setLocalDescription(offer);
 };
 
