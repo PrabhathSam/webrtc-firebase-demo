@@ -128,9 +128,20 @@ let addAnswer = async () => {
 };
 
 
+let checkStatus = async () => {
+  console.log("connectionState", peerConnection.connectionState);
+  console.log("iceConnectionState", peerConnection.iceConnectionState);
+  console.log("iceGatheringState", peerConnection.iceGatheringState);
+  console.log("iceGatheringState", peerConnection.iceGatheringState);
+  console.log("signalingState", peerConnection.signalingState);
+  console.log("remoteDescription", peerConnection.remoteDescription);
+  console.log("localDescription", peerConnection.localDescription);
+};
+
 
 document.getElementById("create-offer").addEventListener("click", createOffer);
 document
   .getElementById("create-answer")
   .addEventListener("click", createAnswer);
 document.getElementById("add-answer").addEventListener("click", addAnswer);
+document.getElementById("check-status").addEventListener("click", checkStatus);
